@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "ss-project-hw1"
+version = "0.1.0"
+description = "HW4"
+authors = ["Gosha <gkpistsov@edu.hse.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+torch = "2.1.0"
+torchvision = ">=0.12.0"
+llvmlite = "^0.41.0"
+numpy = "<1.26.0"
+tqdm = "^4.66.1"
+tensorboard = "^2.14.1"
+matplotlib = "^3.8.0"
+pandas = ">=1.0.0"
+speechbrain = "^0.5.15"
+datasets = "^2.14.5"
+editdistance = "^0.6.2"
+wandb = "^0.15.12"
+pyctcdecode = "^0.5.0"
+torchaudio = ">2.0.0"
+pillow = "^10.0.1"
+numba = "0.58.0"
+torch-audiomentations = "^0.11.0"
+kenlm = "^0.2.0"
+flashlight-text = "0.0.3"
+pyloudnorm = "^0.1.1"
+torchmetrics = "^1.2.0"
+librosa = "^0.10.1"
+soundfile = "^0.12.1"
+setuptools-scm = "^8.0.4"
+pesq = "^0.0.4"
+
+[tool.poetry.group.dev.dependencies]
+pyproject-flake8 = "^6.1.0"
+black = "^23.9.1"
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["F403", "F401"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
