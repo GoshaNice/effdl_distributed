@@ -87,16 +87,10 @@ def run_training(rank, size):
         dataset, sampler=DistributedSampler(dataset, size, rank), batch_size=64
     )
     
-    device = torch.device(f"mps:{rank}") # replace with "cuda" afterwards
+    device = torch.device(f"cuda:{rank}") # replace with "cuda" afterwards
     model = Net().to(device)
-    model = DistributedDataParallel(model)
-    # model.to(device)
+    model = DistributedDataParallel(model, device_ids=[rank])
     optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
-    # optimizer = DistributedOptimizer(
-    #     torch.optim.SGD,
-    #     model.parameters(),
-    #     lr=0.01, momentum=0.5
-    # )
 
     num_batches = len(loader)
     total_accum_steps = 2
@@ -134,5 +128,5 @@ def run_training(rank, size):
 if __name__ == "__main__":
     local_rank = int(os.environ["LOCAL_RANK"])
     init_process(
-        local_rank, fn=run_training, backend="gloo"
+        local_rank, fn=run_training, backend="nccl"
     )  # replace with "nccl" when testing on several GPUs
