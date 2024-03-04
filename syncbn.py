@@ -25,6 +25,7 @@ class sync_batch_norm(Function):
         input_sum = input.sum(0)  # (L)
         input_squared_sum = (input**2).sum(0)  # (L)
         input_num_elem = torch.tensor([input.shape[0]])  # (1)
+        input_num_elem = input_num_elem.to(input.device)
         input_info = torch.cat(
             [input_sum, input_squared_sum, input_num_elem], 0
         )  # (2L+1)
@@ -89,6 +90,8 @@ class SyncBatchNorm(_BatchNorm):
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         # You will probably need to use `sync_batch_norm` from above
+        self.running_mean = self.running_mean.to(input.device)
+        self.running_std = self.running_std.to(input.device)
         if self.training:
             output = sync_batch_norm.apply(
                 input, self.running_mean, self.running_std, self.eps, self.momentum
