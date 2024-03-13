@@ -1,4 +1,5 @@
 import os
+import time
 
 import torch
 import torch.distributed as dist
@@ -69,6 +70,8 @@ def average_gradients(model):
 
 def run_training(rank, size):
     torch.manual_seed(0)
+    if rank == 0:
+        start_time = time.perf_counter()
 
     dataset = CIFAR100(
         "./cifar",
@@ -106,7 +109,7 @@ def run_training(rank, size):
 
             optimizer.zero_grad()
             output = model(data)
-            loss = torch.nn.functional.cross_entropy(output, target)
+            loss = torch.nn.functional.cross_entropy(output, target) / total_accum_steps
             acc = (output.argmax(dim=1) == target).float().mean()
             epoch_acc += acc.detach()
             epoch_loss += loss.detach()
@@ -123,6 +126,12 @@ def run_training(rank, size):
         )
         epoch_loss = 0
         # where's the validation loop?
+    if rank == 1:
+        dist.barrier()
+    if rank == 0:
+        print(f"Total time: {time.perf_counter()}")
+        print(torch.cuda.memory_summary(device=f"cuda:{rank}"))
+        dist.barrier()
 
 
 if __name__ == "__main__":

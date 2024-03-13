@@ -25,8 +25,8 @@ def init_process(rank, size, fn, global_bs, hid_dim, backend="nccl"):
     dist.init_process_group(backend, rank=rank, world_size=size)
 
     ## Choose your fighter
-    # batchnorm = nn.SyncBatchNorm(hid_dim, affine=False, device=f"cuda:{rank}") switch to torch
-    batchnorm = SyncBatchNorm(hid_dim, eps=1e-5, momentum=0.1)  # switch to custom
+    batchnorm = nn.SyncBatchNorm(hid_dim, affine=False, device=f"cuda:{rank}") # switch to original
+    # batchnorm = SyncBatchNorm(hid_dim, eps=1e-5, momentum=0.1)  # switch to custom
     batchnorm.train()
     fn(rank, size, batchnorm, hid_dim, global_bs)
 
@@ -52,7 +52,9 @@ def run_batchnorm(rank, size, batchnorm, hid_dim, global_bs):
         end_bs = min(start_bs + local_bs, global_bs // 2)
         loss = (start_bs < end_bs) * proc_custom_loss(output[: end_bs - start_bs])
         loss.backward()
+        torch.cuda.synchronize()
         times.append(time.perf_counter() - start_time)
+
     if rank == 1:
         dist.barrier()
     print(f"[Rank {rank}]")
