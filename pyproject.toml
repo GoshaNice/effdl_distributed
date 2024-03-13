@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "ss-project-hw1"
+name = "week6"
 version = "0.1.0"
-description = "HW4"
+description = "week6"
 authors = ["Gosha <gkpistsov@edu.hse.ru>"]
 readme = "README.md"
 
